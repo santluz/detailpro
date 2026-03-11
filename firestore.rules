@@ -1,0 +1,143 @@
+// ============================================================
+// DETAILPRO SAAS – Firestore Security Rules
+// Cole estas regras no Firebase Console > Firestore > Rules
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: Get user document
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Helper: Check if user belongs to company
+    function belongsToCompany(companyId) {
+      return isAuth() && getUserData().companyId == companyId;
+    }
+
+    // Helper: Check user role
+    function hasRole(role) {
+      return isAuth() && getUserData().role == role;
+    }
+
+    function isAdmin() {
+      return hasRole('admin');
+    }
+
+    function isManagerOrAbove() {
+      return isAuth() && getUserData().role in ['admin', 'manager'];
+    }
+
+    // ============================================================
+    // COMPANIES
+    // ============================================================
+    match /companies/{companyId} {
+      allow read: if belongsToCompany(companyId);
+      allow create: if isAuth();
+      allow update: if belongsToCompany(companyId) && isAdmin();
+      allow delete: if false; // Never delete companies
+    }
+
+    // ============================================================
+    // USERS
+    // ============================================================
+    match /users/{userId} {
+      allow read: if isAuth() && (
+        request.auth.uid == userId ||
+        belongsToCompany(resource.data.companyId)
+      );
+      allow create: if isAuth();
+      allow update: if isAuth() && (
+        request.auth.uid == userId ||
+        (belongsToCompany(resource.data.companyId) && isAdmin())
+      );
+      allow delete: if belongsToCompany(resource.data.companyId) && isAdmin();
+    }
+
+    // ============================================================
+    // CLIENTS
+    // ============================================================
+    match /clients/{clientId} {
+      allow read, write: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow create: if isAuth() && belongsToCompany(request.resource.data.companyId);
+    }
+
+    // ============================================================
+    // VEHICLES
+    // ============================================================
+    match /vehicles/{vehicleId} {
+      allow read, write: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow create: if isAuth() && belongsToCompany(request.resource.data.companyId);
+    }
+
+    // ============================================================
+    // SERVICES
+    // ============================================================
+    match /services/{serviceId} {
+      allow read: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow write: if isAuth() && belongsToCompany(resource.data.companyId) && isManagerOrAbove();
+      allow create: if isAuth() && belongsToCompany(request.resource.data.companyId) && isManagerOrAbove();
+    }
+
+    // ============================================================
+    // APPOINTMENTS
+    // ============================================================
+    match /appointments/{appointmentId} {
+      allow read, write: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow create: if isAuth() && belongsToCompany(request.resource.data.companyId);
+    }
+
+    // ============================================================
+    // EMPLOYEES
+    // ============================================================
+    match /employees/{employeeId} {
+      allow read: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow write: if isAuth() && belongsToCompany(resource.data.companyId) && isManagerOrAbove();
+      allow create: if isAuth() && belongsToCompany(request.resource.data.companyId) && isManagerOrAbove();
+    }
+
+    // ============================================================
+    // PRODUCTS
+    // ============================================================
+    match /products/{productId} {
+      allow read: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow write: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow create: if isAuth() && belongsToCompany(request.resource.data.companyId);
+    }
+
+    // ============================================================
+    // FINANCIAL
+    // ============================================================
+    match /financial/{transactionId} {
+      allow read: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow write: if isAuth() && belongsToCompany(resource.data.companyId) && (
+        isManagerOrAbove() || hasRole('finance')
+      );
+      allow create: if isAuth() && belongsToCompany(request.resource.data.companyId);
+    }
+
+    // ============================================================
+    // SUBSCRIPTIONS
+    // ============================================================
+    match /subscriptions/{subscriptionId} {
+      allow read: if isAuth() && belongsToCompany(resource.data.companyId);
+      allow write: if false; // Only via server/admin SDK
+    }
+
+    // ============================================================
+    // LOGS
+    // ============================================================
+    match /logs/{logId} {
+      allow read: if isAuth() && belongsToCompany(resource.data.companyId) && isManagerOrAbove();
+      allow create: if isAuth() && belongsToCompany(request.resource.data.companyId);
+      allow update, delete: if false; // Logs are immutable
+    }
+  }
+}
