@@ -1,14 +1,55 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import { BarChart3 } from 'lucide-react';
+'use client'
+
+import { useEffect, useState } from "react"
+import { collection, query, where, getDocs } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { useAuth } from "@/hooks/useAuth"
+
 export default function ReportsPage() {
+
+  const { user } = useAuth()
+  const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+
+    async function loadFinancial() {
+
+      if (!user) return
+
+      const q = query(
+        collection(db, "financial"),
+        where("companyId", "==", user.companyId)
+      )
+
+      const snap = await getDocs(q)
+
+      let sum = 0
+
+      snap.forEach(doc => {
+        const data = doc.data()
+        sum += data.amount || 0
+      })
+
+      setTotal(sum)
+
+    }
+
+    loadFinancial()
+
+  }, [user])
+
   return (
-    <div className="space-y-6">
-      <div className="page-header"><h1 className="page-title">Relatórios</h1></div>
-      <div className="card p-12 text-center">
-        <BarChart3 className="w-12 h-12 text-gray-300 dark:text-gray-700 mx-auto mb-3" />
-        <p className="text-gray-500 dark:text-gray-400">Módulo de relatórios em desenvolvimento</p>
-      </div>
+
+    <div style={{padding:20}}>
+
+      <h1>Relatórios</h1>
+
+      <h2>Faturamento Total</h2>
+
+      <p style={{fontSize:24}}>
+        R$ {total}
+      </p>
+
     </div>
-  );
+  )
 }
