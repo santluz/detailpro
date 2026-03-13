@@ -23,6 +23,7 @@ import {
   DocumentSnapshot,
 } from 'firebase/firestore';
 import { db } from './config';
+export { db };
 
 // ============================================================
 // COLLECTION NAMES
