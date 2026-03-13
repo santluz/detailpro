@@ -60,27 +60,52 @@ export default function Dashboard() {
 
     <h1>Dashboard DetailPro</h1>
 
-    <div style={{display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:20}}>
+    <div style={{
+  display:"grid",
+  gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",
+  gap:20,
+  marginTop:20
+}}>
 
-      <div>
-        <h3>Clientes</h3>
-        <p>{clients}</p>
-      </div>
+      <div style={{
+  background:"#fff",
+  padding:20,
+  borderRadius:10,
+  boxShadow:"0 4px 10px rgba(0,0,0,0.1)"
+}}>
+  <h3>Clientes</h3>
+  <p style={{fontSize:28,fontWeight:"bold"}}>{clients}</p>
+</div>
 
-      <div>
-        <h3>Veículos</h3>
-        <p>{vehicles}</p>
-      </div>
+      <div style={{
+  background:"#fff",
+  padding:20,
+  borderRadius:10,
+  boxShadow:"0 4px 10px rgba(0,0,0,0.1)"
+}}>
+  <h3>Veículos</h3>
+  <p style={{fontSize:28,fontWeight:"bold"}}>{vehicles}</p>
+</div>
 
-      <div>
-        <h3>Agendamentos</h3>
-        <p>{appointments}</p>
-      </div>
+      <div style={{
+  background:"#fff",
+  padding:20,
+  borderRadius:10,
+  boxShadow:"0 4px 10px rgba(0,0,0,0.1)"
+}}>
+  <h3>Agendamentos</h3>
+  <p style={{fontSize:28,fontWeight:"bold"}}>{appointments}</p>
+</div>
 
-      <div>
-        <h3>Faturamento</h3>
-        <p>R$ {financial}</p>
-      </div>
+      <div style={{
+  background:"#fff",
+  padding:20,
+  borderRadius:10,
+  boxShadow:"0 4px 10px rgba(0,0,0,0.1)"
+}}>
+  <h3>Faturamento</h3>
+  <p style={{fontSize:28,fontWeight:"bold"}}>R$ {financial}</p>
+</div>
 
     </div>
 
