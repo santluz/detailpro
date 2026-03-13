@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth"
 export default function SettingsPage() {
 
   const { user } = useAuth()
-  const [company, setCompany] = useState(null)
+  const [company, setCompany] = useState<any>(null)
 
   useEffect(() => {
 
