@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { doc, getDoc, updateDoc } from "firebase/firestore"
-import { db } from "@/lib/firebase"
+import { db } from "../../lib/firebase"
 import { useAuth } from "@/hooks/useAuth"
 
 export default function SettingsPage() {
