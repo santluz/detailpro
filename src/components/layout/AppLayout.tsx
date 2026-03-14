@@ -40,17 +40,8 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) return null;
-  return (
 
-  <div style={{display:"flex"}}>
-
-    <Sidebar />
-
-    <main style={{flex:1,padding:20}}>
-      {children}
-    </main>
-
-  </div>
+  return children;
 
 );
 }
