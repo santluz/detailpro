@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback } from 'react';
-import { financialService } from '@/lib/firebase/firestore';
+import { financialService } from '../../../lib/firebase/firestore';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Transaction } from '@/types';
 import { formatCurrency, formatDate } from '@/lib/utils';

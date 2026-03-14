@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback } from 'react';
-import { vehiclesService, clientsService } from '@/lib/firebase/firestore';
+import { vehiclesService, clientsService } from '../../../lib/firebase/firestore';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Vehicle, Client } from '@/types';
 import { Plus, Search, Car, Edit2, Trash2, X, Loader2 } from 'lucide-react';

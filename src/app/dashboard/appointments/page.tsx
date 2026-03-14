@@ -7,7 +7,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import ptBrLocale from '@fullcalendar/core/locales/pt-br';
-import { appointmentsService, clientsService, vehiclesService, servicesService, employeesService } from '@/lib/firebase/firestore';
+import { appointmentsService, clientsService, vehiclesService, servicesService, employeesService } from '../../../lib/firebase/firestore';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Appointment, Client, Vehicle, Service, Employee } from '@/types';
 import { formatCurrency, STATUS_COLORS, STATUS_LABELS, SERVICE_COLORS } from '@/lib/utils';
