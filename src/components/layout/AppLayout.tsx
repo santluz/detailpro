@@ -43,7 +43,6 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
   return children;
 
-);
 }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
