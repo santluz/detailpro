@@ -1,67 +1,96 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useEffect, useState } from "react"
-import { doc, getDoc, updateDoc } from "firebase/firestore"
-import { db } from '../../../lib/firebase/firestore'
-import { useAuth } from "@/hooks/useAuth"
+import { servicesService } from "@/lib/firebase/firestore"
+import { useAuth } from "@/lib/hooks/useAuth"
 
-export default function SettingsPage() {
+export default function ServicesPage() {
 
-  const { user } = useAuth()
-  const [company, setCompany] = useState<any>(null)
+  const { companyId } = useAuth()
 
- useEffect(() => {
-  if (companyId) {
-    load()
+  const [services, setServices] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  async function loadServices() {
+
+    if (!companyId) return
+
+    try {
+
+      setLoading(true)
+
+      const data = await servicesService.getAll(companyId)
+
+      setServices(data)
+
+    } catch (error) {
+
+      console.error(error)
+
+    } finally {
+
+      setLoading(false)
+
+    }
+
   }
-}, [companyId])
 
-    loadCompany()
+  useEffect(() => {
 
-  }, [user])
+    if (companyId) {
+      loadServices()
+    }
 
-  async function save() {
-
-    const ref = doc(db, "companies", user.companyId)
-
-    await updateDoc(ref, company)
-
-    alert("Configurações atualizadas")
-
-  }
-
-  if (!company) return <div>Carregando...</div>
+  }, [companyId])
 
   return (
 
-    <div style={{padding:20}}>
+    <div>
 
-      <h1>Configurações da Empresa</h1>
+      <h1 style={{fontSize:24,fontWeight:"bold"}}>
+        Serviços
+      </h1>
 
-      <input
-        value={company.name || ""}
-        placeholder="Nome da empresa"
-        onChange={(e)=>
-          setCompany({...company, name:e.target.value})
-        }
-      />
+      {loading ? (
 
-      <br/><br/>
+        <p style={{marginTop:20}}>Carregando...</p>
 
-      <input
-        value={company.phone || ""}
-        placeholder="Telefone"
-        onChange={(e)=>
-          setCompany({...company, phone:e.target.value})
-        }
-      />
+      ) : (
 
-      <br/><br/>
+        <div style={{marginTop:20}}>
 
-      <button onClick={save}>
-        Salvar
-      </button>
+          {services.length === 0 && (
+            <p>Nenhum serviço cadastrado</p>
+          )}
+
+          {services.map((service:any) => (
+
+            <div
+              key={service.id}
+              style={{
+                padding:12,
+                border:"1px solid #e5e7eb",
+                borderRadius:6,
+                marginBottom:10
+              }}
+            >
+
+              <strong>{service.name}</strong>
+
+              <div>Preço: R$ {service.price}</div>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      )}
 
     </div>
+
   )
+
 }
