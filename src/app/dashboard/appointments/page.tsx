@@ -3,33 +3,49 @@
 export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from "react"
-import { appointmentsService } from "@/lib/firebase/firestore"
+import { appointmentsService, clientsService, vehiclesService, servicesService } from "@/lib/firebase/firestore"
 import { useAuth } from "@/lib/hooks/useAuth"
 
-export default function AppointmentsPage() {
+export default function AppointmentsPage(){
 
   const { companyId } = useAuth()
 
-  const [appointments, setAppointments] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [clients,setClients] = useState<any[]>([])
+  const [vehicles,setVehicles] = useState<any[]>([])
+  const [services,setServices] = useState<any[]>([])
+  const [appointments,setAppointments] = useState<any[]>([])
 
-  async function loadAppointments() {
+  const [client,setClient] = useState("")
+  const [vehicle,setVehicle] = useState("")
+  const [service,setService] = useState("")
+  const [date,setDate] = useState("")
+  const [time,setTime] = useState("")
 
-    if (!companyId) return
+  const [loading,setLoading] = useState(true)
 
-    setLoading(true)
+  async function loadData(){
 
-    try {
+    if(!companyId) return
 
-      const data = await appointmentsService.getAll(companyId)
+    try{
 
-      setAppointments(data)
+      const [c,v,s,a] = await Promise.all([
+        clientsService.getAll(companyId),
+        vehiclesService.getAll(companyId),
+        servicesService.getAll(companyId),
+        appointmentsService.getAll(companyId)
+      ])
 
-    } catch (error) {
+      setClients(c)
+      setVehicles(v)
+      setServices(s)
+      setAppointments(a)
 
-      console.error(error)
+    }catch(e){
 
-    } finally {
+      console.error(e)
+
+    }finally{
 
       setLoading(false)
 
@@ -37,11 +53,46 @@ export default function AppointmentsPage() {
 
   }
 
-  useEffect(() => {
-    loadAppointments()
-  }, [companyId])
+  async function createAppointment(){
 
-  return (
+    if(!client || !vehicle || !service || !date || !time) return
+
+    try{
+
+      await appointmentsService.create({
+        companyId,
+        clientId:client,
+        vehicleId:vehicle,
+        serviceId:service,
+        date,
+        time
+      })
+
+      setClient("")
+      setVehicle("")
+      setService("")
+      setDate("")
+      setTime("")
+
+      loadData()
+
+    }catch(e){
+
+      console.error(e)
+
+    }
+
+  }
+
+  useEffect(()=>{
+
+    if(companyId){
+      loadData()
+    }
+
+  },[companyId])
+
+  return(
 
     <div>
 
@@ -49,31 +100,80 @@ export default function AppointmentsPage() {
         Agendamentos
       </h1>
 
+      <div style={{marginTop:20,marginBottom:30}}>
+
+        <select value={client} onChange={(e)=>setClient(e.target.value)} style={{marginRight:10,padding:6}}>
+          <option value="">Cliente</option>
+          {clients.map(c=>(
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+
+        <select value={vehicle} onChange={(e)=>setVehicle(e.target.value)} style={{marginRight:10,padding:6}}>
+          <option value="">Veículo</option>
+          {vehicles.map(v=>(
+            <option key={v.id} value={v.id}>{v.plate}</option>
+          ))}
+        </select>
+
+        <select value={service} onChange={(e)=>setService(e.target.value)} style={{marginRight:10,padding:6}}>
+          <option value="">Serviço</option>
+          {services.map(s=>(
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </select>
+
+        <input
+        type="date"
+        value={date}
+        onChange={(e)=>setDate(e.target.value)}
+        style={{marginRight:10,padding:6}}
+        />
+
+        <input
+        type="time"
+        value={time}
+        onChange={(e)=>setTime(e.target.value)}
+        style={{marginRight:10,padding:6}}
+        />
+
+        <button
+        onClick={createAppointment}
+        style={{
+          padding:"8px 14px",
+          background:"#2563eb",
+          color:"#fff",
+          borderRadius:4
+        }}
+        >
+        Agendar
+        </button>
+
+      </div>
+
       {loading ? (
-        <p style={{marginTop:20}}>Carregando...</p>
+
+        <p>Carregando...</p>
+
       ) : (
 
-        <div style={{marginTop:20}}>
+        <div>
 
-          {appointments.length === 0 && (
-            <p>Nenhum agendamento encontrado</p>
-          )}
-
-          {appointments.map((item:any) => (
-
+          {appointments.map((a:any)=>(
+            
             <div
-              key={item.id}
-              style={{
-                padding:12,
-                border:"1px solid #e5e7eb",
-                borderRadius:6,
-                marginBottom:10
-              }}
+            key={a.id}
+            style={{
+              border:"1px solid #e5e7eb",
+              padding:12,
+              marginBottom:10,
+              borderRadius:6
+            }}
             >
 
-              <strong>{item.clientName}</strong>
+            <strong>{a.date} - {a.time}</strong>
 
-              <div>{item.serviceName}</div>
+            <div>Cliente: {a.clientId}</div>
 
             </div>
 
