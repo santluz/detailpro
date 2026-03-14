@@ -3,7 +3,13 @@
 export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from "react"
-import { appointmentsService, clientsService, vehiclesService, servicesService } from "@/lib/firebase/firestore"
+import {
+  appointmentsService,
+  clientsService,
+  vehiclesService,
+  servicesService
+} from "@/lib/firebase/firestore"
+
 import { useAuth } from "@/lib/hooks/useAuth"
 
 export default function AppointmentsPage(){
@@ -94,29 +100,50 @@ export default function AppointmentsPage(){
 
   return(
 
-    <div>
+    <div style={{padding:20,color:"var(--text-color)"}}>
 
-      <h1 style={{fontSize:24,fontWeight:"bold"}}>
+      <h1 style={{
+        fontSize:26,
+        fontWeight:"bold",
+        marginBottom:20
+      }}>
         Agendamentos
       </h1>
 
-      <div style={{marginTop:20,marginBottom:30}}>
+      <div style={{
+        display:"flex",
+        flexWrap:"wrap",
+        gap:10,
+        marginBottom:30
+      }}>
 
-        <select value={client} onChange={(e)=>setClient(e.target.value)} style={{marginRight:10,padding:6}}>
+        <select
+        value={client}
+        onChange={(e)=>setClient(e.target.value)}
+        style={{padding:8}}
+        >
           <option value="">Cliente</option>
           {clients.map(c=>(
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
 
-        <select value={vehicle} onChange={(e)=>setVehicle(e.target.value)} style={{marginRight:10,padding:6}}>
+        <select
+        value={vehicle}
+        onChange={(e)=>setVehicle(e.target.value)}
+        style={{padding:8}}
+        >
           <option value="">Veículo</option>
           {vehicles.map(v=>(
             <option key={v.id} value={v.id}>{v.plate}</option>
           ))}
         </select>
 
-        <select value={service} onChange={(e)=>setService(e.target.value)} style={{marginRight:10,padding:6}}>
+        <select
+        value={service}
+        onChange={(e)=>setService(e.target.value)}
+        style={{padding:8}}
+        >
           <option value="">Serviço</option>
           {services.map(s=>(
             <option key={s.id} value={s.id}>{s.name}</option>
@@ -127,14 +154,14 @@ export default function AppointmentsPage(){
         type="date"
         value={date}
         onChange={(e)=>setDate(e.target.value)}
-        style={{marginRight:10,padding:6}}
+        style={{padding:8}}
         />
 
         <input
         type="time"
         value={time}
         onChange={(e)=>setTime(e.target.value)}
-        style={{marginRight:10,padding:6}}
+        style={{padding:8}}
         />
 
         <button
@@ -143,7 +170,9 @@ export default function AppointmentsPage(){
           padding:"8px 14px",
           background:"#2563eb",
           color:"#fff",
-          borderRadius:4
+          borderRadius:6,
+          border:"none",
+          cursor:"pointer"
         }}
         >
         Agendar
@@ -157,17 +186,17 @@ export default function AppointmentsPage(){
 
       ) : (
 
-        <div>
+        <div style={{display:"grid",gap:10}}>
 
           {appointments.map((a:any)=>(
             
             <div
             key={a.id}
             style={{
-              border:"1px solid #e5e7eb",
               padding:12,
-              marginBottom:10,
-              borderRadius:6
+              borderRadius:8,
+              border:"1px solid #e5e7eb",
+              background:"var(--card-bg)"
             }}
             >
 
