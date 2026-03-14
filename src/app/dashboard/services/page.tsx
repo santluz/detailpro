@@ -13,6 +13,9 @@ export default function ServicesPage() {
   const [services, setServices] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
+  const [name,setName] = useState("")
+  const [price,setPrice] = useState("")
+
   async function loadServices() {
 
     if (!companyId) return
@@ -37,13 +40,38 @@ export default function ServicesPage() {
 
   }
 
-  useEffect(() => {
+  async function createService(){
 
-    if (companyId) {
+    if(!name || !price) return
+
+    try{
+
+      await servicesService.create({
+        companyId,
+        name,
+        price:Number(price)
+      })
+
+      setName("")
+      setPrice("")
+
+      loadServices()
+
+    }catch(e){
+
+      console.error(e)
+
+    }
+
+  }
+
+  useEffect(()=>{
+
+    if(companyId){
       loadServices()
     }
 
-  }, [companyId])
+  },[companyId])
 
   return (
 
@@ -53,33 +81,59 @@ export default function ServicesPage() {
         Serviços
       </h1>
 
+      <div style={{marginTop:20,marginBottom:30}}>
+
+        <input
+        placeholder="Nome do serviço"
+        value={name}
+        onChange={(e)=>setName(e.target.value)}
+        style={{padding:8,marginRight:10,border:"1px solid #ccc"}}
+        />
+
+        <input
+        placeholder="Preço"
+        value={price}
+        onChange={(e)=>setPrice(e.target.value)}
+        style={{padding:8,marginRight:10,border:"1px solid #ccc"}}
+        />
+
+        <button
+        onClick={createService}
+        style={{
+          padding:"8px 14px",
+          background:"#2563eb",
+          color:"#fff",
+          borderRadius:4
+        }}
+        >
+        Adicionar
+        </button>
+
+      </div>
+
       {loading ? (
 
-        <p style={{marginTop:20}}>Carregando...</p>
+        <p>Carregando...</p>
 
       ) : (
 
-        <div style={{marginTop:20}}>
+        <div>
 
-          {services.length === 0 && (
-            <p>Nenhum serviço cadastrado</p>
-          )}
-
-          {services.map((service:any) => (
-
+          {services.map((service:any)=>(
+            
             <div
-              key={service.id}
-              style={{
-                padding:12,
-                border:"1px solid #e5e7eb",
-                borderRadius:6,
-                marginBottom:10
-              }}
+            key={service.id}
+            style={{
+              border:"1px solid #e5e7eb",
+              padding:12,
+              marginBottom:10,
+              borderRadius:6
+            }}
             >
 
-              <strong>{service.name}</strong>
+            <strong>{service.name}</strong>
 
-              <div>Preço: R$ {service.price}</div>
+            <div>R$ {service.price}</div>
 
             </div>
 
