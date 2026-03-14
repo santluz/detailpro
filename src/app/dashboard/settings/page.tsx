@@ -1,4 +1,5 @@
 export default function SettingsPage() {
+
   return (
 
     <div>
@@ -8,11 +9,11 @@ export default function SettingsPage() {
       </h1>
 
       <p style={{marginTop:10}}>
-        Área de configurações em desenvolvimento.
+        Configurações do sistema em desenvolvimento.
       </p>
 
     </div>
 
   )
-}
 
+}

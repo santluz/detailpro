@@ -1,4 +1,5 @@
 export default function ReportsPage() {
+
   return (
 
     <div>
@@ -8,10 +9,11 @@ export default function ReportsPage() {
       </h1>
 
       <p style={{marginTop:10}}>
-        Área de relatórios em desenvolvimento.
+        Módulo de relatórios em desenvolvimento.
       </p>
 
     </div>
 
   )
+
 }

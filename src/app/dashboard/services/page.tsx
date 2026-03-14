@@ -10,20 +10,11 @@ export default function SettingsPage() {
   const { user } = useAuth()
   const [company, setCompany] = useState<any>(null)
 
-  useEffect(() => {
-
-    async function loadCompany() {
-
-      if (!user) return
-
-      const ref = doc(db, "companies", user.companyId)
-      const snap = await getDoc(ref)
-
-      if (snap.exists()) {
-        setCompany(snap.data())
-      }
-
-    }
+ useEffect(() => {
+  if (companyId) {
+    load()
+  }
+}, [companyId])
 
     loadCompany()
 
