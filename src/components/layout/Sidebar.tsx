@@ -1,38 +1,64 @@
 'use client'
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
-export default function Sidebar(){
+export default function Sidebar() {
 
-  return(
+  const pathname = usePathname()
 
-    <div style={{
-      width:220,
-      background:"#111",
-      color:"#fff",
-      height:"100vh",
-      padding:20
-    }}>
+  const menu = [
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Clientes", path: "/dashboard/clients" },
+    { name: "Veículos", path: "/dashboard/vehicles" },
+    { name: "Agendamentos", path: "/dashboard/appointments" },
+    { name: "Serviços", path: "/dashboard/services" },
+    { name: "Financeiro", path: "/dashboard/financial" },
+    { name: "Relatórios", path: "/dashboard/reports" },
+    { name: "Configurações", path: "/dashboard/settings" },
+  ]
 
-      <h2 style={{marginBottom:30}}>DetailPro</h2>
+  return (
 
-      <nav style={{display:"flex",flexDirection:"column",gap:15}}>
+    <div
+      style={{
+        width: 240,
+        background: "#0f172a",
+        color: "white",
+        height: "100vh",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        padding: 20
+      }}
+    >
 
-        <Link href="/dashboard" style={{color:"#fff"}}>Dashboard</Link>
+      <h2 style={{ marginBottom: 30 }}>
+        DetailPro
+      </h2>
 
-        <Link href="/clients" style={{color:"#fff"}}>Clientes</Link>
+      <nav style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-        <Link href="/vehicles" style={{color:"#fff"}}>Veículos</Link>
+        {menu.map(item => (
 
-        <Link href="/appointments" style={{color:"#fff"}}>Agendamentos</Link>
+          <Link
+            key={item.path}
+            href={item.path}
+            style={{
+              padding: "10px 12px",
+              borderRadius: 6,
+              textDecoration: "none",
+              color: "white",
+              background:
+                pathname === item.path
+                  ? "#1e293b"
+                  : "transparent"
+            }}
+          >
+            {item.name}
+          </Link>
 
-        <Link href="/services" style={{color:"#fff"}}>Serviços</Link>
-
-        <Link href="/financial" style={{color:"#fff"}}>Financeiro</Link>
-
-        <Link href="/reports" style={{color:"#fff"}}>Relatórios</Link>
-
-        <Link href="/settings" style={{color:"#fff"}}>Configurações</Link>
+        ))}
 
       </nav>
 
