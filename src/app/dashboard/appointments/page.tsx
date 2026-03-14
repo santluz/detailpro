@@ -100,27 +100,18 @@ export default function AppointmentsPage(){
 
   return(
 
-    <div style={{padding:20,color:"var(--text-color)"}}>
+    <div className="p-6 text-gray-900 dark:text-gray-100">
 
-      <h1 style={{
-        fontSize:26,
-        fontWeight:"bold",
-        marginBottom:20
-      }}>
+      <h1 className="text-2xl font-bold mb-6">
         Agendamentos
       </h1>
 
-      <div style={{
-        display:"flex",
-        flexWrap:"wrap",
-        gap:10,
-        marginBottom:30
-      }}>
+      <div className="flex flex-wrap gap-3 mb-8">
 
         <select
         value={client}
         onChange={(e)=>setClient(e.target.value)}
-        style={{padding:8}}
+        className="border rounded p-2 dark:bg-gray-800 dark:border-gray-700"
         >
           <option value="">Cliente</option>
           {clients.map(c=>(
@@ -131,7 +122,7 @@ export default function AppointmentsPage(){
         <select
         value={vehicle}
         onChange={(e)=>setVehicle(e.target.value)}
-        style={{padding:8}}
+        className="border rounded p-2 dark:bg-gray-800 dark:border-gray-700"
         >
           <option value="">Veículo</option>
           {vehicles.map(v=>(
@@ -142,7 +133,7 @@ export default function AppointmentsPage(){
         <select
         value={service}
         onChange={(e)=>setService(e.target.value)}
-        style={{padding:8}}
+        className="border rounded p-2 dark:bg-gray-800 dark:border-gray-700"
         >
           <option value="">Serviço</option>
           {services.map(s=>(
@@ -154,26 +145,19 @@ export default function AppointmentsPage(){
         type="date"
         value={date}
         onChange={(e)=>setDate(e.target.value)}
-        style={{padding:8}}
+        className="border rounded p-2 dark:bg-gray-800 dark:border-gray-700"
         />
 
         <input
         type="time"
         value={time}
         onChange={(e)=>setTime(e.target.value)}
-        style={{padding:8}}
+        className="border rounded p-2 dark:bg-gray-800 dark:border-gray-700"
         />
 
         <button
         onClick={createAppointment}
-        style={{
-          padding:"8px 14px",
-          background:"#2563eb",
-          color:"#fff",
-          borderRadius:6,
-          border:"none",
-          cursor:"pointer"
-        }}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
         Agendar
         </button>
@@ -186,18 +170,13 @@ export default function AppointmentsPage(){
 
       ) : (
 
-        <div style={{display:"grid",gap:10}}>
+        <div className="grid gap-3">
 
           {appointments.map((a:any)=>(
             
             <div
             key={a.id}
-            style={{
-              padding:12,
-              borderRadius:8,
-              border:"1px solid #e5e7eb",
-              background:"var(--card-bg)"
-            }}
+            className="border rounded p-3 bg-white dark:bg-gray-800 dark:border-gray-700"
             >
 
             <strong>{a.date} - {a.time}</strong>
