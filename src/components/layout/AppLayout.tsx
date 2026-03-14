@@ -1,4 +1,5 @@
 'use client';
+import Sidebar from "./Sidebar"
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from '@/components/layout/Sidebar';
@@ -40,7 +41,19 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) return null;
-  return <>{children}</>;
+  return (
+
+  <div style={{display:"flex"}}>
+
+    <Sidebar />
+
+    <main style={{flex:1,padding:20}}>
+      {children}
+    </main>
+
+  </div>
+
+);
 }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
