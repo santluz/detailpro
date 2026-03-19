@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback } from 'react';
-import { clientsService } from '../../../lib/firebase/firestore';
+import { clientsService } from '@/lib/firebase/firestore';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Client } from '@/types';
 import { formatPhone, formatCurrency, formatDate } from '@/lib/utils';

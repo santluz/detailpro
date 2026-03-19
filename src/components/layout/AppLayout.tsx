@@ -1,7 +1,7 @@
 'use client';
-import Sidebar from "./Sidebar"
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { useAppStore } from '@/lib/store';
 import { useAuth, useAuthProvider } from '@/lib/hooks/useAuth';
@@ -40,9 +40,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) return null;
-
-  return children;
-
+  return <>{children}</>;
 }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {

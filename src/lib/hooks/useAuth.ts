@@ -15,9 +15,30 @@ export function useAuthProvider() {
       if (firebaseUser) {
         try {
           const userData = await getUserData(firebaseUser.uid);
-          setUserData(userData as User);
+          if (userData) {
+            setUserData(userData as User);
+          } else {
+            // User authenticated but no Firestore doc yet - create minimal user data
+            setUserData({
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              name: firebaseUser.displayName || firebaseUser.email || '',
+              role: 'admin',
+              companyId: firebaseUser.uid,
+              createdAt: new Date(),
+            } as User);
+          }
         } catch (err) {
           console.error('Error loading user data:', err);
+          // Even if Firestore fails, keep user logged in with basic info
+          setUserData({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || '',
+            name: firebaseUser.displayName || firebaseUser.email || '',
+            role: 'admin',
+            companyId: firebaseUser.uid,
+            createdAt: new Date(),
+          } as User);
         }
       } else {
         reset();
