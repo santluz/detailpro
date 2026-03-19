@@ -21,24 +21,30 @@ export function useAuthProvider() {
             // User authenticated but no Firestore doc yet - create minimal user data
             setUserData({
               uid: firebaseUser.uid,
+              id: firebaseUser.uid,
               email: firebaseUser.email || '',
               name: firebaseUser.displayName || firebaseUser.email || '',
               role: 'admin',
               companyId: firebaseUser.uid,
+              status: 'active',
               createdAt: new Date(),
-            } as User);
+              updatedAt: new Date(),
+            } as unknown as User);
           }
         } catch (err) {
           console.error('Error loading user data:', err);
           // Even if Firestore fails, keep user logged in with basic info
           setUserData({
             uid: firebaseUser.uid,
+            id: firebaseUser.uid,
             email: firebaseUser.email || '',
             name: firebaseUser.displayName || firebaseUser.email || '',
             role: 'admin',
             companyId: firebaseUser.uid,
+            status: 'active',
             createdAt: new Date(),
-          } as User);
+            updatedAt: new Date(),
+          } as unknown as User);
         }
       } else {
         reset();
