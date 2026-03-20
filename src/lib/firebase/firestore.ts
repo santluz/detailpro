@@ -408,11 +408,18 @@ export async function getDashboardStats(companyId: string) {
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59);
 
+  // Add 8s timeout to prevent infinite loading
+  const withTimeout = <T>(promise: Promise<T>, fallback: T): Promise<T> =>
+    Promise.race([
+      promise,
+      new Promise<T>((resolve) => setTimeout(() => resolve(fallback), 8000)),
+    ]);
+
   const [todayAppts, monthTransactions, clients, vehicles] = await Promise.all([
-    appointmentsService.getByDate(companyId, today),
-    financialService.getByPeriod(companyId, startOfMonth, endOfMonth),
-    getDocuments(COLLECTIONS.CLIENTS, [byCompany(companyId)]),
-    getDocuments(COLLECTIONS.VEHICLES, [byCompany(companyId)]),
+    withTimeout(appointmentsService.getByDate(companyId, today), []),
+    withTimeout(financialService.getByPeriod(companyId, startOfMonth, endOfMonth), []),
+    withTimeout(getDocuments(COLLECTIONS.CLIENTS, [byCompany(companyId)]), []),
+    withTimeout(getDocuments(COLLECTIONS.VEHICLES, [byCompany(companyId)]), []),
   ]);
 
   const appts = todayAppts as Array<{ status: string; servicePrice?: number }>;
