@@ -15,13 +15,10 @@ import {
   limit,
   Timestamp,
   serverTimestamp,
-  onSnapshot,
   QueryConstraint,
   writeBatch,
   increment,
-  startAfter,
-  DocumentSnapshot,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 import { db } from './config';
 
 // ============================================================
@@ -127,15 +124,28 @@ export function subscribeToCollection<T>(
   constraints: QueryConstraint[],
   callback: (data: T[]) => void
 ): () => void {
+  // Firestore Lite doesn't support real-time listeners
+  // Use polling instead
   const colRef = collection(db, collectionName);
   const q = query(colRef, ...constraints);
-  return onSnapshot(q, (snap) => {
-    const data = snap.docs.map((d) => ({
-      id: d.id,
-      ...convertTimestamps(d.data()),
-    })) as T[];
-    callback(data);
-  });
+  let active = true;
+
+  const poll = async () => {
+    if (!active) return;
+    try {
+      const snap = await getDocs(q);
+      const data = snap.docs.map((d) => ({
+        id: d.id,
+        ...convertTimestamps(d.data() as Record<string, unknown>),
+      })) as T[];
+      callback(data);
+    } catch (e) {
+      console.error('Poll error:', e);
+    }
+  };
+
+  poll();
+  return () => { active = false; };
 }
 
 // ============================================================

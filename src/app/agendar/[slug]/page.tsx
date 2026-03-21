@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { getDocs, collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getDocs, collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore/lite';
 import { db } from '@/lib/firebase/config';
 import { formatCurrency } from '@/lib/utils';
 import { Calendar, Clock, Car, User, Phone, ChevronRight, ChevronLeft, Check, Zap } from 'lucide-react';

@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { initializeFirestore } from 'firebase/firestore';
+import { getFirestore as getLiteFirestore } from 'firebase/firestore/lite';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -14,18 +14,7 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
-
-// Force HTTP long polling - fixes "client is offline" on Vercel
-let _db: ReturnType<typeof initializeFirestore>;
-try {
-  _db = initializeFirestore(app, {
-    experimentalForceLongPolling: true,
-  });
-} catch {
-  const { getFirestore } = require('firebase/firestore');
-  _db = getFirestore(app);
-}
-
-export const db = _db;
+// Firestore Lite - HTTP REST only, no WebSockets, works everywhere
+export const db = getLiteFirestore(app);
 export const storage = getStorage(app);
 export default app;

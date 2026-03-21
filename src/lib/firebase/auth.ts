@@ -10,7 +10,7 @@ import {
   User as FirebaseUser,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore/lite';
 import { auth, db } from './config';
 import { COLLECTIONS } from './firestore';
 
