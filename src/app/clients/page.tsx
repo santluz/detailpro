@@ -1,6 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback } from 'react';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 import { clientsService } from '@/lib/firebase/firestore';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Client } from '@/types';
@@ -79,7 +80,7 @@ function ClientModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="label">Telefone *</label>
-              <input className="input" value={form.phone} onChange={set('phone')} required />
+              <PhoneInput className="input" value={form.phone} onChange={v => setForm(p => ({ ...p, phone: v }))} />
             </div>
             <div>
               <label className="label">WhatsApp</label>

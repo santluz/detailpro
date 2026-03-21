@@ -1,6 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback } from 'react';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 import { employeesService } from '@/lib/firebase/firestore';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Employee } from '@/types';
@@ -41,7 +42,7 @@ function EmployeeModal({ employee, onClose, onSave }: { employee?: Employee | nu
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div><label className="label">Nome *</label><input className="input" value={form.name} onChange={set('name')} required /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="label">Telefone *</label><input className="input" value={form.phone} onChange={set('phone')} required /></div>
+            <div><label className="label">Telefone *</label><PhoneInput className="input" value={form.phone} onChange={v => setForm(p => ({ ...p, phone: v }))} /></div>
             <div><label className="label">E-mail</label><input className="input" type="email" value={form.email} onChange={set('email')} /></div>
             <div><label className="label">Função</label>
               <select className="input" value={form.role} onChange={set('role')}>
