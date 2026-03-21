@@ -81,7 +81,7 @@ export default function VehiclesPage() {
   const { companyId } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState<{ open: boolean; vehicle?: Vehicle | null }>({ open: false });
 

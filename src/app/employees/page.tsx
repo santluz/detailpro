@@ -70,7 +70,7 @@ function EmployeeModal({ employee, onClose, onSave }: { employee?: Employee | nu
 export default function EmployeesPage() {
   const { companyId } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<{ open: boolean; employee?: Employee | null }>({ open: false });
 
   const load = useCallback(async () => {

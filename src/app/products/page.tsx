@@ -118,7 +118,7 @@ function ProductModal({
 export default function ProductsPage() {
   const { companyId } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState<{ open: boolean; product?: Product | null }>({ open: false });
 

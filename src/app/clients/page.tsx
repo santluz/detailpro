@@ -113,7 +113,7 @@ function ClientModal({
 export default function ClientsPage() {
   const { companyId } = useAuth();
   const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState<{ open: boolean; client?: Client | null }>({ open: false });
 

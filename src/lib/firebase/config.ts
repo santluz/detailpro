@@ -1,7 +1,7 @@
 'use client';
-import { initializeApp, getApps } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { initializeFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, CACHE_SIZE_UNLIMITED } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -13,12 +13,22 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+// Singleton - só inicializa uma vez
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
 export const auth = getAuth(app);
 
-export const db = initializeFirestore(app, {
-  experimentalAutoDetectLongPolling: true, // auto-detecta o melhor método
-});
+// Singleton Firestore - evita reinicialização
+let _db: ReturnType<typeof getFirestore>;
+try {
+  _db = initializeFirestore(app, {
+    experimentalAutoDetectLongPolling: true,
+    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+  });
+} catch {
+  _db = getFirestore(app);
+}
 
+export const db = _db;
 export const storage = getStorage(app);
 export default app;

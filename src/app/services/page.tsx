@@ -70,7 +70,7 @@ function ServiceModal({ service, onClose, onSave }: { service?: Service | null; 
 export default function ServicesPage() {
   const { companyId } = useAuth();
   const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<{ open: boolean; service?: Service | null }>({ open: false });
 
   const load = useCallback(async () => {

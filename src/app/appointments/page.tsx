@@ -183,7 +183,7 @@ export default function AppointmentsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<{ open: boolean; appointment?: Appointment | null }>({ open: false });
 
   const load = useCallback(async () => {
