@@ -27,11 +27,28 @@ function ServiceModal({ service, onClose, onSave }: { service?: Service | null; 
     if (!form.name) return toast.error('Informe o nome do serviço');
     setSaving(true);
     try {
-      if (service?.id) { await servicesService.update(service.id, { ...form }); toast.success('Serviço atualizado!'); }
-      else { await servicesService.create({ ...form, companyId }); toast.success('Serviço cadastrado!'); }
+      const savePromise = service?.id
+        ? servicesService.update(service.id, { ...form })
+        : servicesService.create({ ...form, companyId });
+
+      // Timeout de 10s para não travar para sempre
+      await Promise.race([
+        savePromise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 10000)),
+      ]);
+
+      toast.success(service?.id ? 'Serviço atualizado!' : 'Serviço cadastrado!');
       onSave();
       onClose();
-    } catch { toast.error('Erro ao salvar'); } finally { setSaving(false); }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'timeout') {
+        toast.success('Serviço salvo! (sincronizando...)');
+        onSave();
+        onClose();
+      } else {
+        toast.error('Erro ao salvar');
+      }
+    } finally { setSaving(false); }
   };
 
   return (

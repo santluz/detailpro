@@ -40,12 +40,13 @@ function ProductModal({
     e.preventDefault();
     if (!form.name) return toast.error('Informe o nome do produto');
     setSaving(true);
+    const _t = new Promise<never>((_, r) => setTimeout(() => r(new Error("timeout")), 8000));
     try {
       if (product?.id) {
-        await productsService.update(product.id, { ...form });
+        await Promise.race([productsService.update(product.id, { ...form }), _t]);
         toast.success('Produto atualizado!');
       } else {
-        await productsService.create({ ...form, companyId });
+        await Promise.race([productsService.create({ ...form, companyId }), _t]);
         toast.success('Produto cadastrado!');
       }
       onSave();

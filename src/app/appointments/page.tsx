@@ -65,6 +65,7 @@ function AppointmentModal({
       return toast.error('Preencha cliente, veículo e serviço');
     }
     setSaving(true);
+    const _t = new Promise<never>((_, r) => setTimeout(() => r(new Error("timeout")), 8000));
     try {
       const client = clients.find((c) => c.id === form.clientId);
       const vehicle = vehicles.find((v) => v.id === form.vehicleId);
@@ -84,10 +85,10 @@ function AppointmentModal({
       };
 
       if (appointment?.id) {
-        await appointmentsService.update(appointment.id, data);
+        await Promise.race([appointmentsService.update(appointment.id, data), _t]);
         toast.success('Agendamento atualizado!');
       } else {
-        await appointmentsService.create(data);
+        await Promise.race([appointmentsService.create(data), _t]);
         toast.success('Agendamento criado!');
       }
       onSave();

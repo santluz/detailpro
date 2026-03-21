@@ -46,13 +46,14 @@ function TransactionModal({
     e.preventDefault();
     if (!form.description || !form.value || form.value === 0) return toast.error('Preencha descrição e valor');
     setSaving(true);
+    const _t = new Promise<never>((_, r) => setTimeout(() => r(new Error("timeout")), 8000));
     try {
-      await financialService.create({
+      await Promise.race([financialService.create({
         ...form,
         value: form.value,
         date: new Date(form.date + 'T12:00:00'),
         companyId,
-      });
+      }), _t]);
       toast.success('Transação registrada!');
       onSave();
       onClose();

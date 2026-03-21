@@ -32,11 +32,12 @@ function VehicleModal({ vehicle, clients, onClose, onSave }: {
     e.preventDefault();
     if (!form.clientId || !form.brand || !form.plate) return toast.error('Preencha cliente, marca e placa');
     setSaving(true);
+    const _t = new Promise<never>((_, r) => setTimeout(() => r(new Error("timeout")), 8000));
     try {
       const client = clients.find(c => c.id === form.clientId);
       const data = { ...form, companyId, clientName: client?.name, plate: form.plate.toUpperCase() };
-      if (vehicle?.id) { await vehiclesService.update(vehicle.id, data); toast.success('Veículo atualizado!'); }
-      else { await vehiclesService.create(data); toast.success('Veículo cadastrado!'); }
+      if (vehicle?.id) { await Promise.race([vehiclesService.update(vehicle.id, data), _t]); toast.success('Veículo atualizado!'); }
+      else { await Promise.race([vehiclesService.create(data), _t]); toast.success('Veículo cadastrado!'); }
       onSave(); onClose();
     } catch { toast.error('Erro ao salvar'); } finally { setSaving(false); }
   };

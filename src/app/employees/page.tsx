@@ -23,9 +23,10 @@ function EmployeeModal({ employee, onClose, onSave }: { employee?: Employee | nu
     e.preventDefault();
     if (!form.name || !form.phone) return toast.error('Nome e telefone obrigatórios');
     setSaving(true);
+    const _t = new Promise<never>((_, r) => setTimeout(() => r(new Error("timeout")), 8000));
     try {
-      if (employee?.id) { await employeesService.update(employee.id, { ...form }); toast.success('Funcionário atualizado!'); }
-      else { await employeesService.create({ ...form, companyId }); toast.success('Funcionário cadastrado!'); }
+      if (employee?.id) { await Promise.race([employeesService.update(employee.id, { ...form }), _t]); toast.success('Funcionário atualizado!'); }
+      else { await Promise.race([employeesService.create({ ...form, companyId }), _t]); toast.success('Funcionário cadastrado!'); }
       onSave(); onClose();
     } catch { toast.error('Erro ao salvar'); } finally { setSaving(false); }
   };
