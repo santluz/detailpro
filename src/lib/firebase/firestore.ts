@@ -448,3 +448,20 @@ export async function getDashboardStats(companyId: string) {
     lowStockProducts: 0,
   };
 }
+
+// ============================================================
+// COMPANIES SERVICE
+// ============================================================
+export const companiesService = {
+  async get(companyId: string) {
+    const ref = doc(db, COLLECTIONS.COMPANIES, companyId);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    return convertTimestamps({ id: snap.id, ...snap.data() });
+  },
+
+  async update(companyId: string, data: Record<string, unknown>) {
+    const ref = doc(db, COLLECTIONS.COMPANIES, companyId);
+    await updateDoc(ref, { ...data, updatedAt: serverTimestamp() });
+  },
+};
