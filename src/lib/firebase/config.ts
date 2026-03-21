@@ -1,7 +1,7 @@
 'use client';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { initializeFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -15,17 +15,6 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
-
-let _db: ReturnType<typeof initializeFirestore>;
-try {
-  _db = initializeFirestore(app, {
-    experimentalAutoDetectLongPolling: true,
-  });
-} catch {
-  const { getFirestore } = require('firebase/firestore');
-  _db = getFirestore(app);
-}
-
-export const db = _db;
+export const db = getFirestore(app);
 export const storage = getStorage(app);
 export default app;
