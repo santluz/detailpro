@@ -1,7 +1,6 @@
-'use client';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -15,6 +14,18 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+// Force HTTP long polling - fixes "client is offline" on Vercel
+let _db: ReturnType<typeof initializeFirestore>;
+try {
+  _db = initializeFirestore(app, {
+    experimentalForceLongPolling: true,
+  });
+} catch {
+  const { getFirestore } = require('firebase/firestore');
+  _db = getFirestore(app);
+}
+
+export const db = _db;
 export const storage = getStorage(app);
 export default app;
