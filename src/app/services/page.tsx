@@ -41,13 +41,8 @@ function ServiceModal({ service, onClose, onSave }: { service?: Service | null; 
       onSave();
       onClose();
     } catch (err: unknown) {
-      if (err instanceof Error && err.message === 'timeout') {
-        toast.success('Serviço salvo! (sincronizando...)');
-        onSave();
-        onClose();
-      } else {
-        toast.error('Erro ao salvar');
-      }
+      console.error('Save error:', err);
+      toast.error('Erro ao salvar. Verifique sua conexão e tente novamente.');
     } finally { setSaving(false); }
   };
 

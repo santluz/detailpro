@@ -1,7 +1,7 @@
 'use client';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -18,14 +18,10 @@ export const auth = getAuth(app);
 
 let _db: ReturnType<typeof initializeFirestore>;
 try {
-  // Cache local — dados carregam instantaneamente na segunda vez
   _db = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentMultipleTabManager(),
-    }),
+    experimentalAutoDetectLongPolling: true,
   });
 } catch {
-  // Já inicializado
   const { getFirestore } = require('firebase/firestore');
   _db = getFirestore(app);
 }

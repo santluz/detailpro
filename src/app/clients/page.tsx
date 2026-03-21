@@ -50,10 +50,8 @@ function ClientModal({
       onSave();
       onClose();
     } catch (err: unknown) {
-      if (err instanceof Error && err.message === 'timeout') {
-        toast.success('Cliente salvo! (sincronizando...)');
-        onSave(); onClose();
-      } else { toast.error('Erro ao salvar cliente'); }
+      console.error('Save error:', err);
+      toast.error('Erro ao salvar cliente. Verifique sua conexão.');
     } finally {
       setSaving(false);
     }
