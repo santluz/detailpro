@@ -1,7 +1,7 @@
 'use client';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, initializeFirestore, CACHE_SIZE_UNLIMITED } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -13,19 +13,20 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Singleton - só inicializa uma vez
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
 export const auth = getAuth(app);
 
-// Singleton Firestore - evita reinicialização
-let _db: ReturnType<typeof getFirestore>;
+let _db: ReturnType<typeof initializeFirestore>;
 try {
+  // Cache local — dados carregam instantaneamente na segunda vez
   _db = initializeFirestore(app, {
-    experimentalAutoDetectLongPolling: true,
-    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+    }),
   });
 } catch {
+  // Já inicializado
+  const { getFirestore } = require('firebase/firestore');
   _db = getFirestore(app);
 }
 
