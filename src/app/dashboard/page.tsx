@@ -65,14 +65,18 @@ function StatCard({
 // ============================================================
 export default function DashboardPage() {
   const { companyId } = useAuth();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [stats, setStats] = useState<DashboardStats>({
+    todayAppointments: 0, inProgress: 0, completedToday: 0,
+    todayRevenue: 0, monthRevenue: 0, totalClients: 0,
+    totalVehicles: 0, pendingPayments: 0, lowStockProducts: 0,
+  });
   const [todayAppointments, setTodayAppointments] = useState<Appointment[]>([]);
   const [revenueData, setRevenueData] = useState<{ labels: string[]; income: number[]; expenses: number[] }>({
-    labels: [],
-    income: [],
-    expenses: [],
+    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'].map(m => m),
+    income: [0, 0, 0, 0, 0, 0],
+    expenses: [0, 0, 0, 0, 0, 0],
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!companyId) return;
@@ -110,7 +114,7 @@ export default function DashboardPage() {
       }
       setRevenueData({ labels: months, income, expenses });
     } catch (err) {
-      toast.error('Erro ao carregar dados');
+      console.error('Erro ao carregar dados:', err);
     } finally {
       setLoading(false);
     }
@@ -151,14 +155,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      {loading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="card p-5 h-24 shimmer" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             label="Agendamentos Hoje"
             value={stats?.todayAppointments ?? 0}
@@ -209,7 +206,6 @@ export default function DashboardPage() {
             color="bg-orange-500"
           />
         </div>
-      )}
 
       {/* Charts Row */}
       <div className="grid lg:grid-cols-3 gap-6">
