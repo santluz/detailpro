@@ -1,4 +1,5 @@
 'use client';
+import { CurrencyInput } from '@/components/ui/CurrencyInput';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback } from 'react';
 import { productsService } from '@/lib/firebase/firestore';
@@ -91,11 +92,11 @@ function ProductModal({
             </div>
             <div>
               <label className="label">Preço de Compra</label>
-              <input className="input" type="number" step="0.01" min="0" value={form.purchasePrice} onChange={set('purchasePrice')} />
+              <CurrencyInput className="input" value={form.purchasePrice} onChange={v => setForm(p => ({ ...p, purchasePrice: v }))} />
             </div>
             <div>
               <label className="label">Preço de Venda</label>
-              <input className="input" type="number" step="0.01" min="0" value={form.salePrice} onChange={set('salePrice')} />
+              <CurrencyInput className="input" value={form.salePrice} onChange={v => setForm(p => ({ ...p, salePrice: v }))} />
             </div>
           </div>
           <div>

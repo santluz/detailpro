@@ -5,6 +5,7 @@ import { financialService } from '@/lib/firebase/firestore';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Transaction } from '@/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { CurrencyInput } from '@/components/ui/CurrencyInput';
 import {
   Plus, TrendingUp, TrendingDown, DollarSign, X, Loader2, Filter,
 } from 'lucide-react';
@@ -30,7 +31,7 @@ function TransactionModal({
   const [form, setForm] = useState({
     description: '',
     type: 'income' as 'income' | 'expense',
-    value: '',
+    value: 0,
     date: new Date().toISOString().split('T')[0],
     category: 'Serviço',
     paymentMethod: 'Dinheiro',
@@ -43,12 +44,12 @@ function TransactionModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.description || !form.value) return toast.error('Preencha descrição e valor');
+    if (!form.description || !form.value || form.value === 0) return toast.error('Preencha descrição e valor');
     setSaving(true);
     try {
       await financialService.create({
         ...form,
-        value: parseFloat(form.value),
+        value: form.value,
         date: new Date(form.date + 'T12:00:00'),
         companyId,
       });
@@ -96,7 +97,7 @@ function TransactionModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="label">Valor (R$) *</label>
-              <input className="input" type="number" step="0.01" min="0" value={form.value} onChange={set('value')} required />
+              <CurrencyInput className="input" value={form.value} onChange={v => setForm(p => ({ ...p, value: v }))} />
             </div>
             <div>
               <label className="label">Data *</label>
