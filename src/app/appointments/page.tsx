@@ -51,7 +51,7 @@ function AppointmentModal({
 
   useEffect(() => {
     if (form.clientId && companyId) {
-      vehiclesService.getByClient(companyId, form.clientId).then((v) => setVehicles(v as Vehicle[]));
+      vehiclesService.getByClient(companyId, form.clientId).then((v) => setVehicles(v as unknown as Vehicle[]));
     } else {
       setVehicles([]);
     }
@@ -62,8 +62,8 @@ function AppointmentModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.clientId || !form.vehicleId || !form.serviceId) {
-      return toast.error('Preencha cliente, veículo e serviço');
+    if (!form.clientId || !form.serviceId) {
+      return toast.error('Preencha cliente e serviço');
     }
     setSaving(true);
     const _t = new Promise<never>((_, r) => setTimeout(() => r(new Error("timeout")), 8000));
@@ -94,8 +94,9 @@ function AppointmentModal({
       }
       onSave();
       onClose();
-    } catch {
-      toast.error('Erro ao salvar agendamento');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error('Erro: ' + msg);
     } finally {
       setSaving(false);
     }
@@ -202,7 +203,7 @@ export default function AppointmentsPage() {
       setClients(c as Client[]);
       setServices(s as Service[]);
       setEmployees(e as Employee[]);
-    } catch {
+    } catch (err: unknown) {
       toast.error('Erro ao carregar agendamentos');
     } finally {
       setLoading(false);

@@ -196,10 +196,9 @@ export const vehiclesService = {
     return getDocuments(COLLECTIONS.VEHICLES, [byCompany(companyId)]);
   },
   async getByClient(companyId: string, clientId: string) {
-    return getDocuments(COLLECTIONS.VEHICLES, [
-      byCompany(companyId),
-      where('clientId', '==', clientId),
-    ]);
+    // Filter client-side to avoid composite index
+    const all = await getDocuments(COLLECTIONS.VEHICLES, [byCompany(companyId)]);
+    return (all as unknown as Array<Record<string, unknown>>).filter(v => v.clientId === clientId);
   },
   async getById(id: string) {
     return getDocument(COLLECTIONS.VEHICLES, id);
