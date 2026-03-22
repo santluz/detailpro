@@ -42,7 +42,8 @@ function ServiceModal({ service, onClose, onSave }: { service?: Service | null; 
       onClose();
     } catch (err: unknown) {
       console.error('Save error:', err);
-      toast.error('Erro ao salvar. Verifique sua conexão e tente novamente.');
+      const msg = err instanceof Error ? err.message : 'Erro desconhecido';
+      toast.error('Erro: ' + msg);
     } finally { setSaving(false); }
   };
 
