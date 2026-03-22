@@ -155,7 +155,7 @@ export default function FinancialPage() {
       const start = new Date(year, month - 1, 1);
       const end = new Date(year, month, 0, 23, 59, 59);
       const data = await financialService.getByPeriod(companyId, start, end);
-      setTransactions(data as Transaction[]);
+      setTransactions(data as unknown as Transaction[]);
     } catch {
       toast.error('Erro ao carregar transações');
     } finally {

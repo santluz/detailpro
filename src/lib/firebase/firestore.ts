@@ -256,7 +256,6 @@ export const appointmentsService = {
       byCompany(companyId),
       where('date', '>=', Timestamp.fromDate(startOfDay)),
       where('date', '<=', Timestamp.fromDate(endOfDay)),
-      orderBy('date'),
     ]);
   },
   async getByStatus(companyId: string, status: string) {
@@ -347,11 +346,15 @@ export const financialService = {
     ]);
   },
   async getByPeriod(companyId: string, start: Date, end: Date) {
-    return getDocuments(COLLECTIONS.FINANCIAL, [
-      byCompany(companyId),
-      where('date', '>=', Timestamp.fromDate(start)),
-      where('date', '<=', Timestamp.fromDate(end)),
-    ]);
+    // Fetch all and filter client-side to avoid composite index requirement
+    const all = await getDocuments(COLLECTIONS.FINANCIAL, [byCompany(companyId)]);
+    return (all as Array<Record<string, unknown>>).filter((t) => {
+      const d = t.date instanceof Date ? t.date : 
+        (t.date && typeof (t.date as Record<string,unknown>).toDate === 'function') 
+          ? (t.date as { toDate: () => Date }).toDate() 
+          : new Date(t.date as string);
+      return d >= start && d <= end;
+    });
   },
   async getMonthSummary(companyId: string, year: number, month: number) {
     const start = new Date(year, month - 1, 1);
