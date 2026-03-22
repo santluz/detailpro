@@ -165,7 +165,6 @@ export const clientsService = {
   async getAll(companyId: string) {
     return getDocuments(COLLECTIONS.CLIENTS, [
       byCompany(companyId),
-      orderBy('name'),
     ]);
   },
   async getById(id: string) {
@@ -180,7 +179,7 @@ export const clientsService = {
   subscribe(companyId: string, callback: (data: unknown[]) => void) {
     return subscribeToCollection(
       COLLECTIONS.CLIENTS,
-      [byCompany(companyId), orderBy('name')],
+      [byCompany(companyId)],
       callback
     );
   },
@@ -223,8 +222,6 @@ export const servicesService = {
   async getAll(companyId: string) {
     return getDocuments(COLLECTIONS.SERVICES, [
       byCompany(companyId),
-      where('active', '==', true),
-      orderBy('name'),
     ]);
   },
   async getById(id: string) {
@@ -248,7 +245,6 @@ export const appointmentsService = {
   async getAll(companyId: string) {
     return getDocuments(COLLECTIONS.APPOINTMENTS, [
       byCompany(companyId),
-      orderBy('date', 'desc'),
     ]);
   },
   async getByDate(companyId: string, date: Date) {
@@ -279,7 +275,7 @@ export const appointmentsService = {
   subscribe(companyId: string, callback: (data: unknown[]) => void) {
     return subscribeToCollection(
       COLLECTIONS.APPOINTMENTS,
-      [byCompany(companyId), orderBy('date', 'desc'), limit(100)],
+      [byCompany(companyId), limit(100)],
       callback
     );
   },
@@ -320,7 +316,6 @@ export const productsService = {
   async getAll(companyId: string) {
     return getDocuments(COLLECTIONS.PRODUCTS, [
       byCompany(companyId),
-      orderBy('name'),
     ]);
   },
   async getLowStock(companyId: string) {
@@ -351,7 +346,6 @@ export const financialService = {
   async getAll(companyId: string) {
     return getDocuments(COLLECTIONS.FINANCIAL, [
       byCompany(companyId),
-      orderBy('date', 'desc'),
     ]);
   },
   async getByPeriod(companyId: string, start: Date, end: Date) {
