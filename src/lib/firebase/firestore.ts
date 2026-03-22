@@ -263,7 +263,6 @@ export const appointmentsService = {
     return getDocuments(COLLECTIONS.APPOINTMENTS, [
       byCompany(companyId),
       where('status', '==', status),
-      orderBy('date', 'desc'),
     ]);
   },
   async update(id: string, data: Record<string, unknown>) {
@@ -291,8 +290,7 @@ export const employeesService = {
   async getAll(companyId: string) {
     return getDocuments(COLLECTIONS.EMPLOYEES, [
       byCompany(companyId),
-      where('status', '==', 'active'),
-      orderBy('name'),
+
     ]);
   },
   async getById(id: string) {
@@ -353,7 +351,6 @@ export const financialService = {
       byCompany(companyId),
       where('date', '>=', Timestamp.fromDate(start)),
       where('date', '<=', Timestamp.fromDate(end)),
-      orderBy('date', 'desc'),
     ]);
   },
   async getMonthSummary(companyId: string, year: number, month: number) {
@@ -394,7 +391,7 @@ export const logsService = {
   async getRecent(companyId: string, limitCount = 50) {
     return getDocuments(COLLECTIONS.LOGS, [
       byCompany(companyId),
-      orderBy('createdAt', 'desc'),
+
       limit(limitCount),
     ]);
   },
