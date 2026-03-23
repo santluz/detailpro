@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -465,6 +466,7 @@ export const companiesService = {
 
   async update(companyId: string, data: Record<string, unknown>) {
     const ref = doc(db, COLLECTIONS.COMPANIES, companyId);
-    await updateDoc(ref, { ...data, updatedAt: serverTimestamp() });
+    // Use setDoc with merge=true so it creates if doesn't exist
+    await setDoc(ref, { ...data, updatedAt: serverTimestamp() }, { merge: true });
   },
 };
