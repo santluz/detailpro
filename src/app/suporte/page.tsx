@@ -1,26 +1,41 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { companiesService } from '@/lib/firebase/firestore';
+import { Company } from '@/types';
 import { MessageCircle, Mail, Phone, FileText, ChevronDown, ChevronUp, ExternalLink, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const faqs = [
   { q: 'Como cadastrar um novo cliente?', a: 'Vá em "Clientes" no menu lateral, clique em "Novo Cliente", preencha os dados e salve.' },
-  { q: 'Como agendar um serviço?', a: 'Acesse "Agenda", clique em um horário no calendário ou no botão "Novo Agendamento".' },
+  { q: 'Como agendar um serviço?', a: 'Acesse "Agenda", clique em "Novo Agendamento" e preencha os dados.' },
   { q: 'Como lançar uma receita ou despesa?', a: 'Vá em "Financeiro", clique em "Nova Transação" e selecione o tipo.' },
   { q: 'Como cadastrar funcionários?', a: 'Acesse "Funcionários", clique em "Novo Funcionário" e preencha os dados.' },
-  { q: 'Como controlar o estoque?', a: 'No módulo "Estoque" cadastre produtos, ajuste quantidades e receba alertas de estoque baixo.' },
+  { q: 'Como controlar o estoque?', a: 'No módulo "Estoque" cadastre produtos e ajuste quantidades.' },
   { q: 'Meus dados são seguros?', a: 'Sim! Todos os dados são salvos automaticamente no Firebase Cloud com criptografia.' },
 ];
 
 export default function SuportePage() {
+  const { companyId } = useAuth();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [company, setCompany] = useState<Partial<Company>>({});
   const [form, setForm] = useState({ nome: '', email: '', mensagem: '' });
+
+  useEffect(() => {
+    if (!companyId) return;
+    companiesService.get(companyId).then(data => {
+      if (data) setCompany(data as unknown as Company);
+    }).catch(console.error);
+  }, [companyId]);
 
   function handleSend() {
     if (!form.nome || !form.email || !form.mensagem) { toast.error('Preencha todos os campos'); return; }
-    toast.success('Mensagem enviada! Retornaremos em até 24h.');
+    toast.success('Mensagem enviada! Retornaremos em breve.');
     setForm({ nome: '', email: '', mensagem: '' });
   }
+
+  const whatsNumber = company.phone?.replace(/\D/g, '') || '';
+  const email = company.email || '';
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -29,27 +44,64 @@ export default function SuportePage() {
         <p className="text-gray-500 dark:text-gray-400 mt-1">Estamos aqui para ajudar você</p>
       </div>
 
+      {/* Canais de contato */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[
-          { icon: MessageCircle, color: 'sky', label: 'WhatsApp', sub: 'Atendimento rápido', href: 'https://wa.me/5511999999999', link: 'Iniciar conversa' },
-          { icon: Mail, color: 'purple', label: 'E-mail', sub: 'Resposta em até 24h', href: 'mailto:suporte@detailpro.com.br', link: 'suporte@detailpro.com.br' },
-          { icon: Phone, color: 'green', label: 'Telefone', sub: 'Seg–Sex, 9h às 18h', href: 'tel:+5511999999999', link: '(11) 99999-9999' },
-        ].map(({ icon: Icon, color, label, sub, href, link }) => (
-          <div key={label} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex flex-col items-center text-center gap-3">
-            <div className={`w-12 h-12 bg-${color}-100 dark:bg-${color}-900/30 rounded-xl flex items-center justify-center`}>
-              <Icon className={`w-6 h-6 text-${color}-500`} />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-900 dark:text-white">{label}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{sub}</p>
-            </div>
-            <a href={href} target="_blank" rel="noopener noreferrer" className="mt-auto text-sm text-sky-500 hover:underline flex items-center gap-1">
-              {link} <ExternalLink className="w-3 h-3" />
-            </a>
+        {/* WhatsApp */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex flex-col items-center text-center gap-3">
+          <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+            <MessageCircle className="w-6 h-6 text-green-500" />
           </div>
-        ))}
+          <div>
+            <p className="font-semibold text-gray-900 dark:text-white">WhatsApp</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Atendimento rápido</p>
+          </div>
+          {whatsNumber ? (
+            <a href={`https://wa.me/55${whatsNumber}`} target="_blank" rel="noopener noreferrer"
+              className="mt-auto inline-flex items-center gap-1 text-sm text-sky-500 hover:underline">
+              {company.phone} <ExternalLink className="w-3 h-3" />
+            </a>
+          ) : (
+            <p className="text-xs text-gray-400 mt-auto">Configure em Configurações → Empresa</p>
+          )}
+        </div>
+
+        {/* E-mail */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex flex-col items-center text-center gap-3">
+          <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+            <Mail className="w-6 h-6 text-purple-500" />
+          </div>
+          <div>
+            <p className="font-semibold text-gray-900 dark:text-white">E-mail</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Resposta em até 24h</p>
+          </div>
+          {email ? (
+            <a href={`mailto:${email}`} className="mt-auto text-sm text-sky-500 hover:underline">{email}</a>
+          ) : (
+            <p className="text-xs text-gray-400 mt-auto">Configure em Configurações → Empresa</p>
+          )}
+        </div>
+
+        {/* Telefone */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex flex-col items-center text-center gap-3">
+          <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex items-center justify-center">
+            <Phone className="w-6 h-6 text-sky-500" />
+          </div>
+          <div>
+            <p className="font-semibold text-gray-900 dark:text-white">Telefone</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{company.settings?.workingHours
+              ? `${company.settings.workingHours.start} às ${company.settings.workingHours.end}`
+              : 'Horário comercial'}
+            </p>
+          </div>
+          {whatsNumber ? (
+            <a href={`tel:+55${whatsNumber}`} className="mt-auto text-sm text-sky-500 hover:underline">{company.phone}</a>
+          ) : (
+            <p className="text-xs text-gray-400 mt-auto">Configure em Configurações → Empresa</p>
+          )}
+        </div>
       </div>
 
+      {/* FAQ */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
           <FileText className="w-5 h-5 text-sky-500" />
@@ -58,7 +110,8 @@ export default function SuportePage() {
         <div className="divide-y divide-gray-100 dark:divide-gray-700">
           {faqs.map((faq, i) => (
             <div key={i} className="p-4">
-              <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full flex items-center justify-between text-left gap-4">
+              <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                className="w-full flex items-center justify-between text-left gap-4">
                 <span className="font-medium text-gray-900 dark:text-white">{faq.q}</span>
                 {openFaq === i ? <ChevronUp className="w-4 h-4 text-gray-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />}
               </button>
@@ -68,6 +121,7 @@ export default function SuportePage() {
         </div>
       </div>
 
+      {/* Formulário */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Enviar mensagem</h2>
