@@ -7,11 +7,13 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import {
   LayoutDashboard, Users, Car, Wrench, Calendar, UserCircle,
   Package, DollarSign, BarChart3, Settings, ChevronLeft,
-  ChevronRight, Zap, HelpCircle, LogOut,
+  ChevronRight, Zap, HelpCircle, LogOut, Shield,
 } from 'lucide-react';
 import { logoutUser } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+
+const SUPER_ADMIN_EMAIL = 'esantluz@gmail.com';
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -35,6 +37,7 @@ export function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useAppStore();
   const { user } = useAuth();
   const router = useRouter();
+  const isSuperAdmin = user?.email === SUPER_ADMIN_EMAIL;
 
   const handleLogout = async () => {
     try {
@@ -46,12 +49,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside
-      className={cn(
-        'sidebar',
-        !sidebarOpen && 'sidebar-collapsed'
-      )}
-    >
+    <aside className={cn('sidebar', !sidebarOpen && 'sidebar-collapsed')}>
       {/* Logo */}
       <div className="flex items-center justify-between px-4 h-16 border-b border-gray-800">
         {sidebarOpen ? (
@@ -67,10 +65,7 @@ export function Sidebar() {
           </div>
         )}
         {sidebarOpen && (
-          <button
-            onClick={toggleSidebar}
-            className="text-gray-500 hover:text-gray-300 transition-colors"
-          >
+          <button onClick={toggleSidebar} className="text-gray-500 hover:text-gray-300 transition-colors">
             <ChevronLeft className="w-4 h-4" />
           </button>
         )}
@@ -79,11 +74,7 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {!sidebarOpen && (
-          <button
-            onClick={toggleSidebar}
-            className="nav-item w-full justify-center mb-3"
-            title="Expandir"
-          >
+          <button onClick={toggleSidebar} className="nav-item w-full justify-center mb-3" title="Expandir">
             <ChevronRight className="w-4 h-4" />
           </button>
         )}
@@ -91,12 +82,9 @@ export function Sidebar() {
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
-            <Link
-              key={item.href}
-              href={item.href}
+            <Link key={item.href} href={item.href}
               className={cn('nav-item', isActive && 'nav-item-active')}
-              title={!sidebarOpen ? item.label : undefined}
-            >
+              title={!sidebarOpen ? item.label : undefined}>
               <item.icon className="w-4 h-4 shrink-0" />
               {sidebarOpen && <span>{item.label}</span>}
             </Link>
@@ -108,17 +96,27 @@ export function Sidebar() {
         {BOTTOM_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
+            <Link key={item.href} href={item.href}
               className={cn('nav-item', isActive && 'nav-item-active')}
-              title={!sidebarOpen ? item.label : undefined}
-            >
+              title={!sidebarOpen ? item.label : undefined}>
               <item.icon className="w-4 h-4 shrink-0" />
               {sidebarOpen && <span>{item.label}</span>}
             </Link>
           );
         })}
+
+        {/* Super Admin — só aparece para esantluz@gmail.com */}
+        {isSuperAdmin && (
+          <>
+            <div className="border-t border-gray-800 my-3" />
+            <Link href="/admin"
+              className={cn('nav-item', pathname === '/admin' && 'nav-item-active', 'text-purple-400 hover:text-purple-300')}
+              title={!sidebarOpen ? 'Super Admin' : undefined}>
+              <Shield className="w-4 h-4 shrink-0" />
+              {sidebarOpen && <span>Super Admin</span>}
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* User info + logout */}
@@ -134,20 +132,12 @@ export function Sidebar() {
               <p className="text-xs font-medium text-white truncate">{user?.name}</p>
               <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="text-gray-500 hover:text-red-400 transition-colors"
-              title="Sair"
-            >
+            <button onClick={handleLogout} className="text-gray-500 hover:text-red-400 transition-colors" title="Sair">
               <LogOut className="w-4 h-4" />
             </button>
           </div>
         ) : (
-          <button
-            onClick={handleLogout}
-            className="nav-item w-full justify-center"
-            title="Sair"
-          >
+          <button onClick={handleLogout} className="nav-item w-full justify-center" title="Sair">
             <LogOut className="w-4 h-4" />
           </button>
         )}
